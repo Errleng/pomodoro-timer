@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Media;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
