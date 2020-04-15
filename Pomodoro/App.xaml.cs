@@ -14,6 +14,9 @@ namespace Pomodoro
         [DllImport("user32.dll")]
         private static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
 
+        [DllImport("user32.dll")]
+        private static extern bool SetForegroundWindow(IntPtr hWnd);
+
         protected override void OnStartup(StartupEventArgs e)
         {
             Process curProc = Process.GetCurrentProcess();
@@ -34,6 +37,8 @@ namespace Pomodoro
             {
                 // magic number
                 ShowWindow(existingProc.MainWindowHandle, 9);
+                SetForegroundWindow(existingProc.MainWindowHandle);
+
                 Current.Shutdown();
             }
 
