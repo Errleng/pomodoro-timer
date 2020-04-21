@@ -26,6 +26,18 @@ namespace Pomodoro.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string AssetDirectory {
+            get {
+                return ((string)(this["AssetDirectory"]));
+            }
+            set {
+                this["AssetDirectory"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string PomodoroSoundFile {
             get {
                 return ((string)(this["PomodoroSoundFile"]));
@@ -92,6 +104,18 @@ namespace Pomodoro.Properties {
             }
             set {
                 this["LongBreakPomodoros"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RandomSound {
+            get {
+                return ((bool)(this["RandomSound"]));
+            }
+            set {
+                this["RandomSound"] = value;
             }
         }
     }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
@@ -19,6 +22,7 @@ namespace Pomodoro
         private const string SHORT_BREAK_STATUS = "Short break";
         private const string DEFAULT_POMODORO_SOUND_FILE = "pomodoro-sound";
         private const string DEFAULT_BREAK_SOUND_FILE = "break-sound";
+        private readonly string[] SOUND_FILE_EXTENSIONS = { ".wav", ".mp3" };
 
         // configuration constants
         private DispatcherTimer timer;
@@ -27,6 +31,8 @@ namespace Pomodoro
 
         // instance variables
         MediaPlayer mediaPlayer;
+        Random random;
+        Stack<string> playlist;
 
         public MainWindow()
         {
@@ -36,6 +42,10 @@ namespace Pomodoro
             mediaPlayer = new MediaPlayer();
             mediaPlayer.Volume = 1.0;
             mediaPlayer.MediaEnded += new EventHandler(Media_Ended);
+
+            random = new Random();
+
+            playlist = new Stack<string>();
 
             // initialize time
             remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.PomodoroDuration);
@@ -47,7 +57,7 @@ namespace Pomodoro
             timer.Interval = new TimeSpan(0, 0, 1);
 
             // check if files are chosen
-            if (!File.Exists(Properties.Settings.Default.PomodoroSoundFile) || !File.Exists(Properties.Settings.Default.BreakSoundFile))
+            if (!Properties.Settings.Default.RandomSound && (!File.Exists(Properties.Settings.Default.PomodoroSoundFile) || !File.Exists(Properties.Settings.Default.BreakSoundFile)))
             {
                 SetDefaultSettings();
             }
@@ -56,9 +66,10 @@ namespace Pomodoro
         public static void SetDefaultSettings()
         {
             // set settings to default values
+            Properties.Settings.Default.RandomSound = false;
 
             // find files by default name
-            DirectoryInfo currentDirectory = new DirectoryInfo(Directory.GetCurrentDirectory() + "/assets");
+            DirectoryInfo currentDirectory = new DirectoryInfo(Properties.Settings.Default.AssetDirectory);
             FileInfo[] files = currentDirectory.GetFiles($"{DEFAULT_POMODORO_SOUND_FILE}.*");
             if (files.Length > 0)
             {
@@ -136,14 +147,19 @@ namespace Pomodoro
 
         private void pomodoroCompletionMessage()
         {
-            if (!File.Exists(Properties.Settings.Default.PomodoroSoundFile))
+            string soundFileName = Properties.Settings.Default.PomodoroSoundFile;
+            if (Properties.Settings.Default.RandomSound)
+            {
+                soundFileName = GetRandomSong();
+            }
+            if (!File.Exists(soundFileName))
             {
                 MessageBox.Show("Pomodoro completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             // start playing sound
-            mediaPlayer.Open(new Uri(Properties.Settings.Default.PomodoroSoundFile));
+            mediaPlayer.Open(new Uri(soundFileName));
             mediaPlayer.Play();
 
             // show message
@@ -160,14 +176,19 @@ namespace Pomodoro
 
         private void breakCompletionMessage()
         {
-            if (!File.Exists(Properties.Settings.Default.BreakSoundFile))
+            string soundFileName = Properties.Settings.Default.BreakSoundFile;
+            if (Properties.Settings.Default.RandomSound)
+            {
+                soundFileName = GetRandomSong();
+            }
+            if (!File.Exists(soundFileName))
             {
                 MessageBox.Show("Break completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             // start playing sound
-            mediaPlayer.Open(new Uri(Properties.Settings.Default.BreakSoundFile));
+            mediaPlayer.Open(new Uri(soundFileName));
             mediaPlayer.Play();
 
             // show message
@@ -205,6 +226,43 @@ namespace Pomodoro
         {
             mediaPlayer.Position = TimeSpan.Zero;
             mediaPlayer.Play();
+        }
+
+        private string GetRandomSong()
+        {
+            if (playlist.Count == 0)
+            {
+                playlist = CreateRandomPlaylist();
+            }
+            return playlist.Pop();
+        }
+        
+        private Stack<string> CreateRandomPlaylist()
+        {
+            List<string> playlistFiles = Directory.EnumerateFiles(Properties.Settings.Default.AssetDirectory)
+                .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
+            Shuffle(playlistFiles);
+            return new Stack<string>(playlistFiles);
+        }
+
+        private void Shuffle<T>(List<T> list)
+        {
+            for (int i = list.Count - 1; i >= 1; i--)
+            {
+                int j = random.Next(i + 1);
+                T element1 = list.ElementAt(i);
+                T element2 = list.ElementAt(j);
+                list[i] = element2;
+                list[j] = element1;
+            }
+        }
+
+        private string PickRandomFile(string directory, IEnumerable<string> extensions)
+        {
+            IEnumerable<string> filePaths = Directory.EnumerateFiles(directory)
+                .Where(x => extensions.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase)));
+            string randomFileName = filePaths.ElementAt(random.Next(filePaths.Count()));
+            return randomFileName;
         }
     }
 }

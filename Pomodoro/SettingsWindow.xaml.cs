@@ -1,5 +1,5 @@
 ﻿using Microsoft.Win32;
-using System;
+using Microsoft.WindowsAPICodePack.Dialogs;
 using System.IO;
 using System.Windows;
 
@@ -14,12 +14,29 @@ namespace Pomodoro
         {
             InitializeComponent();
             // update text boxes with file names
+            AssetDirectoryTextBox.Text = Path.GetFileName(Properties.Settings.Default.AssetDirectory);
             PomodoroSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.PomodoroSoundFile);
             BreakSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.BreakSoundFile);
             PomodoroDurationTextBox.Text = Properties.Settings.Default.PomodoroDuration.ToString();
             ShortBreakDurationTextBox.Text = Properties.Settings.Default.ShortBreakDuration.ToString();
             LongBreakDurationTextBox.Text = Properties.Settings.Default.LongBreakDuration.ToString();
             LongBreakPomodorosTextBox.Text = Properties.Settings.Default.LongBreakPomodoros.ToString();
+            RandomSoundCheckbox.IsChecked = Properties.Settings.Default.RandomSound;
+        }
+
+        private void AssetDirectoryButton_Click(object sender, RoutedEventArgs e)
+        {
+            CommonOpenFileDialog directoryDialog = new CommonOpenFileDialog();
+            directoryDialog.IsFolderPicker = true;
+            if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
+            {
+                // set setting
+                Properties.Settings.Default.AssetDirectory = directoryDialog.FileName;
+                Properties.Settings.Default.Save();
+
+                // update text box with choice
+                AssetDirectoryTextBox.Text = directoryDialog.FileName;
+            }
         }
 
         private void SelectPomodoroSoundButton_Click(object sender, RoutedEventArgs e)
@@ -57,6 +74,7 @@ namespace Pomodoro
                 if (duration > 0)
                 {
                     Properties.Settings.Default.PomodoroDuration = duration;
+                    Properties.Settings.Default.Save();
                     return;
                 }
             }
@@ -70,6 +88,7 @@ namespace Pomodoro
                 if (duration > 0)
                 {
                     Properties.Settings.Default.ShortBreakDuration = duration;
+                    Properties.Settings.Default.Save();
                     return;
                 }
             }
@@ -83,6 +102,7 @@ namespace Pomodoro
                 if (duration > 0)
                 {
                     Properties.Settings.Default.LongBreakDuration = duration;
+                    Properties.Settings.Default.Save();
                     return;
                 }
             }
@@ -96,10 +116,23 @@ namespace Pomodoro
                 if (numPomodoros > 0)
                 {
                     Properties.Settings.Default.LongBreakDuration = numPomodoros;
+                    Properties.Settings.Default.Save();
                     return;
                 }
             }
             MessageBox.Show("Input must be a positive integer", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void RandomSoundCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.RandomSound = true;
+            Properties.Settings.Default.Save();
+        }
+
+        private void RandomSoundCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Properties.Settings.Default.RandomSound = false;
+            Properties.Settings.Default.Save();
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
