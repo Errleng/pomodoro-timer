@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -44,7 +43,6 @@ namespace Pomodoro
             mediaPlayer.MediaEnded += new EventHandler(Media_Ended);
 
             random = new Random();
-
             playlist = new Stack<string>();
 
             // initialize time
@@ -162,6 +160,7 @@ namespace Pomodoro
             mediaPlayer.Open(new Uri(soundFileName));
             mediaPlayer.Play();
 
+
             // show message
             string title = "Pomodoro Complete";
             string text = "Pomodoro complete!\nContinue to next state?";
@@ -172,6 +171,7 @@ namespace Pomodoro
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
+            updateLastPlayedSong(soundFileName);
         }
 
         private void breakCompletionMessage()
@@ -201,6 +201,15 @@ namespace Pomodoro
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
+
+            updateLastPlayedSong(soundFileName);
+        }
+
+        private void updateLastPlayedSong(string soundFileName)
+        {
+            // show last played track
+            string songName = Path.GetFileName(soundFileName);
+            SongLabel.Content = $"{songName}";
         }
 
         private void StartTimerButton_Click(object sender, RoutedEventArgs e)
@@ -239,7 +248,7 @@ namespace Pomodoro
         
         private Stack<string> CreateRandomPlaylist()
         {
-            List<string> playlistFiles = Directory.EnumerateFiles(Properties.Settings.Default.AssetDirectory)
+            List<string> playlistFiles = Directory.EnumerateFiles(Properties.Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)
                 .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
             Shuffle(playlistFiles);
             return new Stack<string>(playlistFiles);
