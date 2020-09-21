@@ -17,6 +17,7 @@ namespace Pomodoro
             AssetDirectoryTextBox.Text = Path.GetFileName(Properties.Settings.Default.AssetDirectory);
             PomodoroSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.PomodoroSoundFile);
             BreakSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.BreakSoundFile);
+            VolumeTextBox.Text = Properties.Settings.Default.Volume.ToString();
             PomodoroDurationTextBox.Text = Properties.Settings.Default.PomodoroDuration.ToString();
             ShortBreakDurationTextBox.Text = Properties.Settings.Default.ShortBreakDuration.ToString();
             LongBreakDurationTextBox.Text = Properties.Settings.Default.LongBreakDuration.ToString();
@@ -37,6 +38,21 @@ namespace Pomodoro
                 // update text box with choice
                 AssetDirectoryTextBox.Text = directoryDialog.FileName;
             }
+        }
+
+        private void VolumeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (double.TryParse(VolumeTextBox.Text, out double volume))
+            {
+                if (volume >= 0 && volume <= 1)
+                {
+                    Properties.Settings.Default.Volume = volume;
+                    Properties.Settings.Default.Save();
+                    VolumeTextBox.Text = volume.ToString();
+                    return;
+                }
+            }
+            MessageBox.Show("Input must be between 0.0 and 1.0", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void SelectPomodoroSoundButton_Click(object sender, RoutedEventArgs e)

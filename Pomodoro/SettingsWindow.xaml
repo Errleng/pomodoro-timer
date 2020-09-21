@@ -23,5 +23,7 @@
         <Button x:Name="LongBreakPomodorosButton" Content="Pomodoros before long break" HorizontalAlignment="Left" Margin="238,83,0,0" VerticalAlignment="Top" Width="168" Click="LongBreakPomodorosButton_Click"/>
         <TextBox x:Name="LongBreakPomodorosTextBox" HorizontalAlignment="Left" Margin="411,83,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
         <CheckBox x:Name="RandomSoundCheckbox" Content="Choose sound randomly" HorizontalAlignment="Left" Margin="536,12,0,0" VerticalAlignment="Top" Checked="RandomSoundCheckbox_Checked" Unchecked="RandomSoundCheckbox_Unchecked"/>
+        <Button x:Name="VolumeButton" Content="Volume" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="97" Click="VolumeButton_Click"/>
+        <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
     </Grid>
 </Window>

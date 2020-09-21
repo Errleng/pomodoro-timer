@@ -27,11 +27,10 @@ namespace Pomodoro
         private DispatcherTimer timer;
         private TimeSpan remainingTime;
         private int completedPomodoros;
-
-        // instance variables
-        MediaPlayer mediaPlayer;
         Random random;
         Stack<string> playlist;
+
+        public MediaPlayer mediaPlayer { get; set; }
 
         public MainWindow()
         {
@@ -39,7 +38,7 @@ namespace Pomodoro
 
             // initialize instance variables
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.Volume = 1.0;
+            mediaPlayer.Volume = Properties.Settings.Default.Volume;
             mediaPlayer.MediaEnded += new EventHandler(Media_Ended);
 
             random = new Random();
@@ -158,6 +157,7 @@ namespace Pomodoro
 
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
+            mediaPlayer.Volume = Properties.Settings.Default.Volume;
             mediaPlayer.Play();
 
 
@@ -189,6 +189,7 @@ namespace Pomodoro
 
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
+            mediaPlayer.Volume = Properties.Settings.Default.Volume;
             mediaPlayer.Play();
 
             // show message
