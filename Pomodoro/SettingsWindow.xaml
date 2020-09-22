@@ -24,6 +24,8 @@
         <TextBox x:Name="LongBreakPomodorosTextBox" HorizontalAlignment="Left" Margin="411,83,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
         <CheckBox x:Name="RandomSoundCheckbox" Content="Choose sound randomly" HorizontalAlignment="Left" Margin="536,12,0,0" VerticalAlignment="Top" Checked="RandomSoundCheckbox_Checked" Unchecked="RandomSoundCheckbox_Unchecked"/>
         <Button x:Name="VolumeButton" Content="Volume" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="97" Click="VolumeButton_Click"/>
-        <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120"/>
+        <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="20"/>
+        <TextBox x:Name="SleepyTimeTextBox" HorizontalAlignment="Left" Margin="609,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="21"/>
+        <Button x:Name="SleepyTimeButton" Content="Sleepy Time" HorizontalAlignment="Left" Margin="536,82,0,0" VerticalAlignment="Top" Click="SleepyTimeButton_Click"/>
     </Grid>
 </Window>

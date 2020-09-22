@@ -24,7 +24,8 @@ namespace Pomodoro
         private readonly string[] SOUND_FILE_EXTENSIONS = { ".wav", ".mp3" };
 
         // configuration constants
-        private DispatcherTimer timer;
+        private DispatcherTimer pomodoroTimer;
+        private DispatcherTimer sleepTimer;
         private TimeSpan remainingTime;
         private int completedPomodoros;
         Random random;
@@ -48,10 +49,15 @@ namespace Pomodoro
             remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.PomodoroDuration);
             StatusLabel.Content = POMODORO_STATUS;
 
-            // initialize timer
-            timer = new DispatcherTimer();
-            timer.Tick += new EventHandler(DispatcherTimer_Tick);
-            timer.Interval = new TimeSpan(0, 0, 1);
+            // initialize Pomodoro timer
+            pomodoroTimer = new DispatcherTimer();
+            pomodoroTimer.Tick += new EventHandler(PomodoroTimerTick);
+            pomodoroTimer.Interval = new TimeSpan(0, 0, 1);
+
+            // initialize sleep timer
+            sleepTimer = new DispatcherTimer();
+            sleepTimer.Tick += new EventHandler(RestartSleepTimer);
+            sleepTimer.Start();
 
             // check if files are chosen
             if (!Properties.Settings.Default.RandomSound && (!File.Exists(Properties.Settings.Default.PomodoroSoundFile) || !File.Exists(Properties.Settings.Default.BreakSoundFile)))
@@ -79,7 +85,48 @@ namespace Pomodoro
             }
         }
 
-        private void DispatcherTimer_Tick(object sender, EventArgs e)
+        public void RestartSleepTimer(Object sender, EventArgs e)
+        {
+            TimeSpan sleepyTime = Properties.Settings.Default.SleepyTime;
+            TimeSpan now = DateTime.Now.TimeOfDay;
+            if (now >= sleepyTime)
+            {
+                // nag the user
+                sleepyTimeMessage();
+                sleepTimer.Interval = new TimeSpan(0, 10, 0); // ten minute intervals
+            }
+            else
+            {
+                sleepTimer.Interval = sleepyTime - now;
+            }
+        }
+
+        private void sleepyTimeMessage()
+        {
+            string soundFileName = GetRandomSong();
+            if (!File.Exists(soundFileName))
+            {
+                MessageBox.Show("Sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
+            // start playing sound
+            mediaPlayer.Open(new Uri(soundFileName));
+            mediaPlayer.Volume = Properties.Settings.Default.Volume;
+            mediaPlayer.Play();
+
+
+            // show message
+            string title = "GO TO SLEEP, JOKER!";
+            string text = "It's time to sleep!";
+            MessageBox.Show(text, title, MessageBoxButton.OK);
+
+            // stop playing sound after message confirmed received
+            mediaPlayer.Stop();
+            updateLastPlayedSong(soundFileName);
+        }
+
+        private void PomodoroTimerTick(object sender, EventArgs e)
         {
             if (remainingTime == TimeSpan.Zero)
             {
@@ -128,17 +175,17 @@ namespace Pomodoro
 
         private void ToggleTimer()
         {
-            if (!timer.IsEnabled)
+            if (!pomodoroTimer.IsEnabled)
             {
                 StartTimerButton.Content = "Stop";
                 SkipButton.Visibility = Visibility.Visible;
-                timer.Start();
+                pomodoroTimer.Start();
             }
             else
             {
                 StartTimerButton.Content = "Start";
                 SkipButton.Visibility = Visibility.Hidden;
-                timer.Stop();
+                pomodoroTimer.Stop();
             }
         }
 
@@ -220,7 +267,7 @@ namespace Pomodoro
 
         private void SkipButton_Click(object sender, RoutedEventArgs e)
         {
-            if (timer.IsEnabled)
+            if (pomodoroTimer.IsEnabled)
             {
                 remainingTime = TimeSpan.Zero;
             }
@@ -246,7 +293,7 @@ namespace Pomodoro
             }
             return playlist.Pop();
         }
-        
+
         private Stack<string> CreateRandomPlaylist()
         {
             List<string> playlistFiles = Directory.EnumerateFiles(Properties.Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)

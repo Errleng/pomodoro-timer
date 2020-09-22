@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using Microsoft.WindowsAPICodePack.Dialogs;
+using System;
 using System.IO;
 using System.Windows;
 
@@ -23,6 +24,7 @@ namespace Pomodoro
             LongBreakDurationTextBox.Text = Properties.Settings.Default.LongBreakDuration.ToString();
             LongBreakPomodorosTextBox.Text = Properties.Settings.Default.LongBreakPomodoros.ToString();
             RandomSoundCheckbox.IsChecked = Properties.Settings.Default.RandomSound;
+            SleepyTimeTextBox.Text = Properties.Settings.Default.SleepyTime.ToString();
         }
 
         private void AssetDirectoryButton_Click(object sender, RoutedEventArgs e)
@@ -149,6 +151,18 @@ namespace Pomodoro
         {
             Properties.Settings.Default.RandomSound = false;
             Properties.Settings.Default.Save();
+        }
+
+        private void SleepyTimeButton_Click(object sender, RoutedEventArgs e)
+        {
+            if (TimeSpan.TryParse(SleepyTimeTextBox.Text, out TimeSpan time))
+            {
+                Properties.Settings.Default.SleepyTime = time;
+                Properties.Settings.Default.Save();
+                ((MainWindow)Application.Current.MainWindow).RestartSleepTimer(null, null);
+                return;
+            }
+            MessageBox.Show("Input must be a valid TimeSpan such as in the form HH:MM:SS", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
