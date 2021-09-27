@@ -3,17 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Pomodoro"
         mc:Ignorable="d"
         Title="Pomodoro Timer" Height="450" Width="800">
     <Grid>
-        <Label x:Name="TimerLabel" Content="Ready" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="72" Margin="0,137,0,0"/>
-        <Button x:Name="StartTimerButton" Content="Start" HorizontalAlignment="Center" Margin="0,248,0,0" VerticalAlignment="Top" Click="StartTimerButton_Click" Width="100" Height="50" FontSize="24"/>
-        <Label x:Name="PomodoroCounterLabel" Content="Pomodoros" HorizontalAlignment="Center" Margin="0,40,0,0" VerticalAlignment="Top" FontSize="24"/>
-        <Label x:Name="StatusLabel" Content="Status" HorizontalAlignment="Center" Margin="0,90,0,0" VerticalAlignment="Top" FontSize="24"/>
-        <Button x:Name="SkipButton" Content="Skip" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Click="SkipButton_Click" Visibility="Hidden" FontSize="18"/>
-        <Button x:Name="SettingsButton" Content="Settings" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Click="SettingsButton_Click"/>
-        <Label x:Name="SongLabel" Content="Song" HorizontalAlignment="Center" Margin="0,344,0,0" VerticalAlignment="Top"/>
+        <Label x:Name="TimerLabel" Content="Ready" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="72"
+               Margin="0,137,0,0" />
+        <Button x:Name="StartTimerButton" Content="Start" HorizontalAlignment="Center" Margin="0,248,0,0"
+                VerticalAlignment="Top" Click="StartTimerButton_Click" Width="100" Height="50" FontSize="24" />
+        <Label x:Name="PomodoroCounterLabel" Content="Pomodoros" HorizontalAlignment="Center" Margin="0,40,0,0"
+               VerticalAlignment="Top" FontSize="24" />
+        <Label x:Name="StatusLabel" Content="Status" HorizontalAlignment="Center" Margin="0,90,0,0"
+               VerticalAlignment="Top" FontSize="24" />
+        <Button x:Name="SkipButton" Content="Skip" HorizontalAlignment="Left" Margin="10,10,0,0"
+                VerticalAlignment="Top" Click="SkipButton_Click" Visibility="Hidden" FontSize="18" />
+        <Button x:Name="SettingsButton" Content="Settings" HorizontalAlignment="Right" Margin="0,10,10,0"
+                VerticalAlignment="Top" Click="SettingsButton_Click" />
+        <Label x:Name="SongLabel" Content="Song" HorizontalAlignment="Center" Margin="0,344,0,0"
+               VerticalAlignment="Top" />
 
     </Grid>
 </Window>

@@ -3,29 +3,49 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Pomodoro"
         mc:Ignorable="d"
         Title="Settings" Height="450" Width="800">
     <Grid>
-        <Button x:Name="AssetDirectoryButton" Content="Asset Directory" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Width="97" Height="20" Click="AssetDirectoryButton_Click"/>
-        <TextBox x:Name="AssetDirectoryTextBox" HorizontalAlignment="Left" Margin="112,10,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <Button x:Name="SelectPomodoroSoundButton" Content="Pomodoro Sound" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,60,0,0" Click="SelectPomodoroSoundButton_Click"/>
-        <Button x:Name="SelectBreakSoundButton" Content="Break Sound" HorizontalAlignment="Left" Margin="10,83,0,0" VerticalAlignment="Top" Width="97" Click="SelectBreakSoundButton_Click"/>
-        <TextBox x:Name="PomodoroSoundTextBox" HorizontalAlignment="Left" Margin="112,60,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <TextBox x:Name="BreakSoundTextBox" HorizontalAlignment="Left" Margin="112,83,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <Button x:Name="ResetButton" Content="Reset to default" HorizontalAlignment="Right" Margin="0,10,10,0" VerticalAlignment="Top" Click="ResetButton_Click"/>
-        <Button x:Name="PomodoroDurationButton" Content="Pomodoro Duration" HorizontalAlignment="Left" Margin="238,10,0,0" VerticalAlignment="Top" Width="168" Click="PomodoroDurationButton_Click"/>
-        <TextBox x:Name="PomodoroDurationTextBox" HorizontalAlignment="Left" Margin="411,10,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <Button x:Name="ShortBreakDurationButton" Content="Short Break Duration" HorizontalAlignment="Left" Margin="238,35,0,0" VerticalAlignment="Top" Width="168" Click="ShortBreakDurationButton_Click"/>
-        <TextBox x:Name="ShortBreakDurationTextBox" HorizontalAlignment="Left" Margin="411,35,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <Button x:Name="LongBreakDurationButton" Content="Long Break Duration" HorizontalAlignment="Left" Margin="238,60,0,0" VerticalAlignment="Top" Width="168" Click="LongBreakDurationButton_Click"/>
-        <TextBox x:Name="LongBreakDurationTextBox" HorizontalAlignment="Left" Margin="411,60,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <Button x:Name="LongBreakPomodorosButton" Content="Pomodoros before long break" HorizontalAlignment="Left" Margin="238,83,0,0" VerticalAlignment="Top" Width="168" Click="LongBreakPomodorosButton_Click"/>
-        <TextBox x:Name="LongBreakPomodorosTextBox" HorizontalAlignment="Left" Margin="411,83,0,0" TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <CheckBox x:Name="RandomSoundCheckbox" Content="Choose sound randomly" HorizontalAlignment="Left" Margin="536,12,0,0" VerticalAlignment="Top" Checked="RandomSoundCheckbox_Checked" Unchecked="RandomSoundCheckbox_Unchecked"/>
-        <Button x:Name="VolumeButton" Content="Volume" HorizontalAlignment="Left" Margin="10,35,0,0" VerticalAlignment="Top" Width="97" Click="VolumeButton_Click"/>
-        <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="20"/>
-        <TextBox x:Name="SleepyTimeTextBox" HorizontalAlignment="Left" Margin="609,82,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="120" Height="21"/>
-        <Button x:Name="SleepyTimeButton" Content="Sleepy Time" HorizontalAlignment="Left" Margin="536,82,0,0" VerticalAlignment="Top" Click="SleepyTimeButton_Click"/>
+        <Button x:Name="AssetDirectoryButton" Content="Asset Directory" HorizontalAlignment="Left" Margin="10,10,0,0"
+                VerticalAlignment="Top" Width="97" Height="20" Click="AssetDirectoryButton_Click" />
+        <TextBox x:Name="AssetDirectoryTextBox" HorizontalAlignment="Left" Margin="112,10,0,0" TextWrapping="NoWrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <Button x:Name="SelectPomodoroSoundButton" Content="Pomodoro Sound" HorizontalAlignment="Left"
+                VerticalAlignment="Top" Margin="10,60,0,0" Click="SelectPomodoroSoundButton_Click" />
+        <Button x:Name="SelectBreakSoundButton" Content="Break Sound" HorizontalAlignment="Left" Margin="10,83,0,0"
+                VerticalAlignment="Top" Width="97" Click="SelectBreakSoundButton_Click" />
+        <TextBox x:Name="PomodoroSoundTextBox" HorizontalAlignment="Left" Margin="112,60,0,0" TextWrapping="NoWrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <TextBox x:Name="BreakSoundTextBox" HorizontalAlignment="Left" Margin="112,83,0,0" TextWrapping="NoWrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <Button x:Name="ResetButton" Content="Reset to default" HorizontalAlignment="Right" Margin="0,10,10,0"
+                VerticalAlignment="Top" Click="ResetButton_Click" />
+        <Button x:Name="PomodoroDurationButton" Content="Pomodoro Duration" HorizontalAlignment="Left"
+                Margin="238,10,0,0" VerticalAlignment="Top" Width="168" Click="PomodoroDurationButton_Click" />
+        <TextBox x:Name="PomodoroDurationTextBox" HorizontalAlignment="Left" Margin="411,10,0,0" TextWrapping="NoWrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <Button x:Name="ShortBreakDurationButton" Content="Short Break Duration" HorizontalAlignment="Left"
+                Margin="238,35,0,0" VerticalAlignment="Top" Width="168" Click="ShortBreakDurationButton_Click" />
+        <TextBox x:Name="ShortBreakDurationTextBox" HorizontalAlignment="Left" Margin="411,35,0,0"
+                 TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20" />
+        <Button x:Name="LongBreakDurationButton" Content="Long Break Duration" HorizontalAlignment="Left"
+                Margin="238,60,0,0" VerticalAlignment="Top" Width="168" Click="LongBreakDurationButton_Click" />
+        <TextBox x:Name="LongBreakDurationTextBox" HorizontalAlignment="Left" Margin="411,60,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <Button x:Name="LongBreakPomodorosButton" Content="Pomodoros before long break" HorizontalAlignment="Left"
+                Margin="238,83,0,0" VerticalAlignment="Top" Width="168" Click="LongBreakPomodorosButton_Click" />
+        <TextBox x:Name="LongBreakPomodorosTextBox" HorizontalAlignment="Left" Margin="411,83,0,0"
+                 TextWrapping="NoWrap" VerticalAlignment="Top" Width="120" Height="20" />
+        <CheckBox x:Name="RandomSoundCheckbox" Content="Choose sound randomly" HorizontalAlignment="Left"
+                  Margin="536,12,0,0" VerticalAlignment="Top" Checked="RandomSoundCheckbox_Checked"
+                  Unchecked="RandomSoundCheckbox_Unchecked" />
+        <Button x:Name="VolumeButton" Content="Volume" HorizontalAlignment="Left" Margin="10,35,0,0"
+                VerticalAlignment="Top" Width="97" Click="VolumeButton_Click" />
+        <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="120" Height="20" />
+        <TextBox x:Name="SleepyTimeTextBox" HorizontalAlignment="Left" Margin="609,82,0,0" TextWrapping="Wrap"
+                 VerticalAlignment="Top" Width="120" Height="21" />
+        <Button x:Name="SleepyTimeButton" Content="Sleepy Time" HorizontalAlignment="Left" Margin="536,82,0,0"
+                VerticalAlignment="Top" Click="SleepyTimeButton_Click" />
     </Grid>
 </Window>

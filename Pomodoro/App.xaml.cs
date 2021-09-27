@@ -1,28 +1,27 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows;
 
 namespace Pomodoro
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
         [DllImport("user32.dll")]
-        private static extern bool ShowWindow(IntPtr hWnd, Int32 nCmdShow);
+        private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
 
         [DllImport("user32.dll")]
         private static extern bool SetForegroundWindow(IntPtr hWnd);
 
         protected override void OnStartup(StartupEventArgs e)
         {
-            Process curProc = Process.GetCurrentProcess();
+            var curProc = Process.GetCurrentProcess();
             Process existingProc = null;
 
-            foreach (Process proc in Process.GetProcesses())
+            foreach (var proc in Process.GetProcesses())
             {
                 // perhaps a better way is to use a mutex
                 // however, bringing the window into focus will require extern methods such as wndProc

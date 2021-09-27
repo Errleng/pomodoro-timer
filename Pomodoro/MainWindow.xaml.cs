@@ -5,11 +5,12 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using Pomodoro.Properties;
 
 namespace Pomodoro
 {
     /// <summary>
-    /// Interaction logic for MainWindow.xaml
+    ///     Interaction logic for MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
@@ -19,19 +20,18 @@ namespace Pomodoro
         private const string POMODORO_STATUS = "Pomodoro";
         private const string LONG_BREAK_STATUS = "Long break";
         private const string SHORT_BREAK_STATUS = "Short break";
+        private const string DEFAULT_ASSET_DIRECTORY = "../../../assets";
         private const string DEFAULT_POMODORO_SOUND_FILE = "pomodoro-sound";
         private const string DEFAULT_BREAK_SOUND_FILE = "break-sound";
         private readonly string[] SOUND_FILE_EXTENSIONS = { ".wav", ".mp3" };
+        private int completedPomodoros;
+        private Stack<string> playlist;
 
         // configuration constants
-        private DispatcherTimer pomodoroTimer;
-        private DispatcherTimer sleepTimer;
+        private readonly DispatcherTimer pomodoroTimer;
+        private readonly Random random;
         private TimeSpan remainingTime;
-        private int completedPomodoros;
-        Random random;
-        Stack<string> playlist;
-
-        public MediaPlayer mediaPlayer { get; set; }
+        private readonly DispatcherTimer sleepTimer;
 
         public MainWindow()
         {
@@ -39,61 +39,65 @@ namespace Pomodoro
 
             // initialize instance variables
             mediaPlayer = new MediaPlayer();
-            mediaPlayer.Volume = Properties.Settings.Default.Volume;
-            mediaPlayer.MediaEnded += new EventHandler(Media_Ended);
+            mediaPlayer.Volume = Settings.Default.Volume;
+            mediaPlayer.MediaEnded += Media_Ended;
 
             random = new Random();
             playlist = new Stack<string>();
 
             // initialize time
-            remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.PomodoroDuration);
+            remainingTime = TimeSpan.FromMinutes(Settings.Default.PomodoroDuration);
             StatusLabel.Content = POMODORO_STATUS;
 
             // initialize Pomodoro timer
             pomodoroTimer = new DispatcherTimer();
-            pomodoroTimer.Tick += new EventHandler(PomodoroTimerTick);
+            pomodoroTimer.Tick += PomodoroTimerTick;
             pomodoroTimer.Interval = new TimeSpan(0, 0, 1);
 
             // initialize sleep timer
             sleepTimer = new DispatcherTimer();
-            sleepTimer.Tick += new EventHandler(RestartSleepTimer);
+            sleepTimer.Tick += RestartSleepTimer;
             sleepTimer.Start();
 
             // check if files are chosen
-            if (!Properties.Settings.Default.RandomSound && (!File.Exists(Properties.Settings.Default.PomodoroSoundFile) || !File.Exists(Properties.Settings.Default.BreakSoundFile)))
+            if (!Settings.Default.RandomSound && (!File.Exists(Settings.Default.PomodoroSoundFile) || !File.Exists(Settings.Default.BreakSoundFile)))
             {
                 SetDefaultSettings();
             }
         }
 
+        public MediaPlayer mediaPlayer { get; set; }
+
         public static void SetDefaultSettings()
         {
             // set settings to default values
-            Properties.Settings.Default.RandomSound = false;
+            Settings.Default.RandomSound = false;
 
             // find files by default name
-            DirectoryInfo currentDirectory = new DirectoryInfo(Properties.Settings.Default.AssetDirectory);
-            FileInfo[] files = currentDirectory.GetFiles($"{DEFAULT_POMODORO_SOUND_FILE}.*");
+            Settings.Default.AssetDirectory = Path.GetFullPath(DEFAULT_ASSET_DIRECTORY);
+            var currentDirectory = new DirectoryInfo(Settings.Default.AssetDirectory);
+            var files = currentDirectory.GetFiles($"{DEFAULT_POMODORO_SOUND_FILE}.*");
             if (files.Length > 0)
             {
-                Properties.Settings.Default.PomodoroSoundFile = files[0].FullName;
+                Settings.Default.PomodoroSoundFile = files[0].FullName;
             }
+
             files = currentDirectory.GetFiles($"{DEFAULT_BREAK_SOUND_FILE}.*");
             if (files.Length > 0)
             {
-                Properties.Settings.Default.BreakSoundFile = files[0].FullName;
+                Settings.Default.BreakSoundFile = files[0].FullName;
             }
         }
 
-        public void RestartSleepTimer(Object sender, EventArgs e)
+        public void RestartSleepTimer(object sender, EventArgs e)
         {
-            TimeSpan sleepyTime = Properties.Settings.Default.SleepyTime;
-            TimeSpan now = DateTime.Now.TimeOfDay;
+            var sleepyTime = Settings.Default.SleepyTime;
+            var now = DateTime.Now.TimeOfDay;
             if (now >= sleepyTime)
             {
                 // nag the user
-                sleepyTimeMessage();
-                sleepTimer.Interval = new TimeSpan(0, 10, 0); // ten minute intervals
+                SleepyTimeMessage();
+                sleepTimer.Interval = new TimeSpan(0, 5, 0);
             }
             else
             {
@@ -101,9 +105,9 @@ namespace Pomodoro
             }
         }
 
-        private void sleepyTimeMessage()
+        private void SleepyTimeMessage()
         {
-            string soundFileName = GetRandomSong();
+            var soundFileName = GetRandomSong();
             if (!File.Exists(soundFileName))
             {
                 MessageBox.Show("Sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -112,18 +116,18 @@ namespace Pomodoro
 
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
-            mediaPlayer.Volume = Properties.Settings.Default.Volume;
+            mediaPlayer.Volume = Settings.Default.Volume;
             mediaPlayer.Play();
 
 
             // show message
-            string title = "GO TO SLEEP, JOKER!";
-            string text = "It's time to sleep!";
+            var title = "GO TO SLEEP!";
+            var text = "It's time to sleep!";
             MessageBox.Show(text, title, MessageBoxButton.OK);
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
-            updateLastPlayedSong(soundFileName);
+            UpdateLastPlayedSong(soundFileName);
         }
 
         private void PomodoroTimerTick(object sender, EventArgs e)
@@ -137,30 +141,30 @@ namespace Pomodoro
                 {
                     completedPomodoros += 1;
                     PomodoroCounterLabel.Content = $"{completedPomodoros} Pomodoros";
-                    if ((completedPomodoros > 0) && (completedPomodoros % Properties.Settings.Default.LongBreakPomodoros == 0))
+                    if (completedPomodoros > 0 && completedPomodoros % Settings.Default.LongBreakPomodoros == 0)
                     {
                         // start long break
                         StatusLabel.Content = LONG_BREAK_STATUS;
-                        remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.LongBreakDuration);
+                        remainingTime = TimeSpan.FromMinutes(Settings.Default.LongBreakDuration);
                     }
                     else
                     {
                         // start short break
                         StatusLabel.Content = SHORT_BREAK_STATUS;
-                        remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.ShortBreakDuration);
+                        remainingTime = TimeSpan.FromMinutes(Settings.Default.ShortBreakDuration);
                     }
 
                     // completion message and sound
-                    pomodoroCompletionMessage();
+                    PomodoroCompletionMessage();
                 }
                 else
                 {
                     // break complete
                     // start a Pomodoro
                     StatusLabel.Content = POMODORO_STATUS;
-                    remainingTime = TimeSpan.FromMinutes(Properties.Settings.Default.PomodoroDuration);
+                    remainingTime = TimeSpan.FromMinutes(Settings.Default.PomodoroDuration);
 
-                    breakCompletionMessage();
+                    BreakCompletionMessage();
                 }
 
                 TimerLabel.Content = $"{remainingTime}";
@@ -189,13 +193,14 @@ namespace Pomodoro
             }
         }
 
-        private void pomodoroCompletionMessage()
+        private void PomodoroCompletionMessage()
         {
-            string soundFileName = Properties.Settings.Default.PomodoroSoundFile;
-            if (Properties.Settings.Default.RandomSound)
+            var soundFileName = Settings.Default.PomodoroSoundFile;
+            if (Settings.Default.RandomSound)
             {
                 soundFileName = GetRandomSong();
             }
+
             if (!File.Exists(soundFileName))
             {
                 MessageBox.Show("Pomodoro completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -204,13 +209,13 @@ namespace Pomodoro
 
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
-            mediaPlayer.Volume = Properties.Settings.Default.Volume;
+            mediaPlayer.Volume = Settings.Default.Volume;
             mediaPlayer.Play();
 
 
             // show message
-            string title = "Pomodoro Complete";
-            string text = "Pomodoro complete!\nContinue to next state?";
+            var title = "Pomodoro Complete";
+            var text = "Pomodoro complete!\nContinue to next state?";
             if (MessageBox.Show(text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ToggleTimer();
@@ -218,16 +223,17 @@ namespace Pomodoro
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
-            updateLastPlayedSong(soundFileName);
+            UpdateLastPlayedSong(soundFileName);
         }
 
-        private void breakCompletionMessage()
+        private void BreakCompletionMessage()
         {
-            string soundFileName = Properties.Settings.Default.BreakSoundFile;
-            if (Properties.Settings.Default.RandomSound)
+            var soundFileName = Settings.Default.BreakSoundFile;
+            if (Settings.Default.RandomSound)
             {
                 soundFileName = GetRandomSong();
             }
+
             if (!File.Exists(soundFileName))
             {
                 MessageBox.Show("Break completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -236,12 +242,12 @@ namespace Pomodoro
 
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
-            mediaPlayer.Volume = Properties.Settings.Default.Volume;
+            mediaPlayer.Volume = Settings.Default.Volume;
             mediaPlayer.Play();
 
             // show message
-            string title = "Break Complete";
-            string text = "Break complete!\nContinue to next state?";
+            var title = "Break Complete";
+            var text = "Break complete!\nContinue to next state?";
             if (MessageBox.Show(text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ToggleTimer();
@@ -250,13 +256,13 @@ namespace Pomodoro
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
 
-            updateLastPlayedSong(soundFileName);
+            UpdateLastPlayedSong(soundFileName);
         }
 
-        private void updateLastPlayedSong(string soundFileName)
+        private void UpdateLastPlayedSong(string soundFileName)
         {
             // show last played track
-            string songName = Path.GetFileName(soundFileName);
+            var songName = Path.GetFileName(soundFileName);
             SongLabel.Content = $"{songName}";
         }
 
@@ -275,7 +281,7 @@ namespace Pomodoro
 
         private void SettingsButton_Click(object sender, RoutedEventArgs e)
         {
-            SettingsWindow settings = new SettingsWindow();
+            var settings = new SettingsWindow();
             settings.Show();
         }
 
@@ -291,12 +297,13 @@ namespace Pomodoro
             {
                 playlist = CreateRandomPlaylist();
             }
+
             return playlist.Pop();
         }
 
         private Stack<string> CreateRandomPlaylist()
         {
-            List<string> playlistFiles = Directory.EnumerateFiles(Properties.Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)
+            var playlistFiles = Directory.EnumerateFiles(Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)
                 .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
             Shuffle(playlistFiles);
             return new Stack<string>(playlistFiles);
@@ -304,11 +311,11 @@ namespace Pomodoro
 
         private void Shuffle<T>(List<T> list)
         {
-            for (int i = list.Count - 1; i >= 1; i--)
+            for (var i = list.Count - 1; i >= 1; i--)
             {
-                int j = random.Next(i + 1);
-                T element1 = list.ElementAt(i);
-                T element2 = list.ElementAt(j);
+                var j = random.Next(i + 1);
+                var element1 = list.ElementAt(i);
+                var element2 = list.ElementAt(j);
                 list[i] = element2;
                 list[j] = element1;
             }
@@ -316,9 +323,9 @@ namespace Pomodoro
 
         private string PickRandomFile(string directory, IEnumerable<string> extensions)
         {
-            IEnumerable<string> filePaths = Directory.EnumerateFiles(directory)
+            var filePaths = Directory.EnumerateFiles(directory)
                 .Where(x => extensions.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase)));
-            string randomFileName = filePaths.ElementAt(random.Next(filePaths.Count()));
+            var randomFileName = filePaths.ElementAt(random.Next(filePaths.Count()));
             return randomFileName;
         }
     }

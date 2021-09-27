@@ -1,13 +1,14 @@
-﻿using Microsoft.Win32;
-using Microsoft.WindowsAPICodePack.Dialogs;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
+using Microsoft.Win32;
+using Microsoft.WindowsAPICodePack.Dialogs;
+using Pomodoro.Properties;
 
 namespace Pomodoro
 {
     /// <summary>
-    /// Interaction logic for SettingsWindow.xaml
+    ///     Interaction logic for SettingsWindow.xaml
     /// </summary>
     public partial class SettingsWindow : Window
     {
@@ -15,27 +16,27 @@ namespace Pomodoro
         {
             InitializeComponent();
             // update text boxes with file names
-            AssetDirectoryTextBox.Text = Path.GetFileName(Properties.Settings.Default.AssetDirectory);
-            PomodoroSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.PomodoroSoundFile);
-            BreakSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.BreakSoundFile);
-            VolumeTextBox.Text = Properties.Settings.Default.Volume.ToString();
-            PomodoroDurationTextBox.Text = Properties.Settings.Default.PomodoroDuration.ToString();
-            ShortBreakDurationTextBox.Text = Properties.Settings.Default.ShortBreakDuration.ToString();
-            LongBreakDurationTextBox.Text = Properties.Settings.Default.LongBreakDuration.ToString();
-            LongBreakPomodorosTextBox.Text = Properties.Settings.Default.LongBreakPomodoros.ToString();
-            RandomSoundCheckbox.IsChecked = Properties.Settings.Default.RandomSound;
-            SleepyTimeTextBox.Text = Properties.Settings.Default.SleepyTime.ToString();
+            AssetDirectoryTextBox.Text = Path.GetFileName(Settings.Default.AssetDirectory);
+            PomodoroSoundTextBox.Text = Path.GetFileName(Settings.Default.PomodoroSoundFile);
+            BreakSoundTextBox.Text = Path.GetFileName(Settings.Default.BreakSoundFile);
+            VolumeTextBox.Text = Settings.Default.Volume.ToString();
+            PomodoroDurationTextBox.Text = Settings.Default.PomodoroDuration.ToString();
+            ShortBreakDurationTextBox.Text = Settings.Default.ShortBreakDuration.ToString();
+            LongBreakDurationTextBox.Text = Settings.Default.LongBreakDuration.ToString();
+            LongBreakPomodorosTextBox.Text = Settings.Default.LongBreakPomodoros.ToString();
+            RandomSoundCheckbox.IsChecked = Settings.Default.RandomSound;
+            SleepyTimeTextBox.Text = Settings.Default.SleepyTime.ToString();
         }
 
         private void AssetDirectoryButton_Click(object sender, RoutedEventArgs e)
         {
-            CommonOpenFileDialog directoryDialog = new CommonOpenFileDialog();
+            var directoryDialog = new CommonOpenFileDialog();
             directoryDialog.IsFolderPicker = true;
             if (directoryDialog.ShowDialog() == CommonFileDialogResult.Ok)
             {
                 // set setting
-                Properties.Settings.Default.AssetDirectory = directoryDialog.FileName;
-                Properties.Settings.Default.Save();
+                Settings.Default.AssetDirectory = directoryDialog.FileName;
+                Settings.Default.Save();
 
                 // update text box with choice
                 AssetDirectoryTextBox.Text = directoryDialog.FileName;
@@ -44,27 +45,28 @@ namespace Pomodoro
 
         private void VolumeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (double.TryParse(VolumeTextBox.Text, out double volume))
+            if (double.TryParse(VolumeTextBox.Text, out var volume))
             {
                 if (volume >= 0 && volume <= 1)
                 {
-                    Properties.Settings.Default.Volume = volume;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.Volume = volume;
+                    Settings.Default.Save();
                     VolumeTextBox.Text = volume.ToString();
                     return;
                 }
             }
+
             MessageBox.Show("Input must be between 0.0 and 1.0", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void SelectPomodoroSoundButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
             if (fileDialog.ShowDialog() == true)
             {
                 // set setting
-                Properties.Settings.Default.PomodoroSoundFile = fileDialog.FileName;
-                Properties.Settings.Default.Save();
+                Settings.Default.PomodoroSoundFile = fileDialog.FileName;
+                Settings.Default.Save();
 
                 // update text box with choice
                 PomodoroSoundTextBox.Text = fileDialog.SafeFileName;
@@ -73,12 +75,12 @@ namespace Pomodoro
 
         private void SelectBreakSoundButton_Click(object sender, RoutedEventArgs e)
         {
-            OpenFileDialog fileDialog = new OpenFileDialog();
+            var fileDialog = new OpenFileDialog();
             if (fileDialog.ShowDialog() == true)
             {
                 // set setting
-                Properties.Settings.Default.BreakSoundFile = fileDialog.FileName;
-                Properties.Settings.Default.Save();
+                Settings.Default.BreakSoundFile = fileDialog.FileName;
+                Settings.Default.Save();
 
                 // update text box with choice
                 BreakSoundTextBox.Text = fileDialog.SafeFileName;
@@ -87,96 +89,101 @@ namespace Pomodoro
 
         private void PomodoroDurationButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(PomodoroDurationTextBox.Text, out int duration))
+            if (int.TryParse(PomodoroDurationTextBox.Text, out var duration))
             {
                 if (duration > 0)
                 {
-                    Properties.Settings.Default.PomodoroDuration = duration;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.PomodoroDuration = duration;
+                    Settings.Default.Save();
                     return;
                 }
             }
+
             MessageBox.Show("Input must be a positive integer of minutes", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void ShortBreakDurationButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(ShortBreakDurationTextBox.Text, out int duration))
+            if (int.TryParse(ShortBreakDurationTextBox.Text, out var duration))
             {
                 if (duration > 0)
                 {
-                    Properties.Settings.Default.ShortBreakDuration = duration;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.ShortBreakDuration = duration;
+                    Settings.Default.Save();
                     return;
                 }
             }
+
             MessageBox.Show("Input must be a positive integer of minutes", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void LongBreakDurationButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(LongBreakDurationTextBox.Text, out int duration))
+            if (int.TryParse(LongBreakDurationTextBox.Text, out var duration))
             {
                 if (duration > 0)
                 {
-                    Properties.Settings.Default.LongBreakDuration = duration;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.LongBreakDuration = duration;
+                    Settings.Default.Save();
                     return;
                 }
             }
+
             MessageBox.Show("Input must be a positive integer of minutes", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void LongBreakPomodorosButton_Click(object sender, RoutedEventArgs e)
         {
-            if (int.TryParse(LongBreakPomodorosTextBox.Text, out int numPomodoros))
+            if (int.TryParse(LongBreakPomodorosTextBox.Text, out var numPomodoros))
             {
                 if (numPomodoros > 0)
                 {
-                    Properties.Settings.Default.LongBreakDuration = numPomodoros;
-                    Properties.Settings.Default.Save();
+                    Settings.Default.LongBreakDuration = numPomodoros;
+                    Settings.Default.Save();
                     return;
                 }
             }
+
             MessageBox.Show("Input must be a positive integer", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void RandomSoundCheckbox_Checked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.RandomSound = true;
-            Properties.Settings.Default.Save();
+            Settings.Default.RandomSound = true;
+            Settings.Default.Save();
         }
 
         private void RandomSoundCheckbox_Unchecked(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.RandomSound = false;
-            Properties.Settings.Default.Save();
+            Settings.Default.RandomSound = false;
+            Settings.Default.Save();
         }
 
         private void SleepyTimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (TimeSpan.TryParse(SleepyTimeTextBox.Text, out TimeSpan time))
+            if (TimeSpan.TryParse(SleepyTimeTextBox.Text, out var time))
             {
-                Properties.Settings.Default.SleepyTime = time;
-                Properties.Settings.Default.Save();
+                Settings.Default.SleepyTime = time;
+                Settings.Default.Save();
                 ((MainWindow)Application.Current.MainWindow).RestartSleepTimer(null, null);
                 return;
             }
+
             MessageBox.Show("Input must be a valid TimeSpan such as in the form HH:MM:SS", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)
         {
-            Properties.Settings.Default.Reset();
+            Settings.Default.Reset();
 
             // cannot only use Properties.Settings.Default.Reset() because defaults are dynamically assigned
             MainWindow.SetDefaultSettings();
 
             // update text boxes with choice
-            PomodoroSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.PomodoroSoundFile);
-            BreakSoundTextBox.Text = Path.GetFileName(Properties.Settings.Default.BreakSoundFile);
+            PomodoroSoundTextBox.Text = Path.GetFileName(Settings.Default.PomodoroSoundFile);
+            BreakSoundTextBox.Text = Path.GetFileName(Settings.Default.BreakSoundFile);
 
-            Properties.Settings.Default.Save();
+            Settings.Default.Save();
         }
     }
 }
