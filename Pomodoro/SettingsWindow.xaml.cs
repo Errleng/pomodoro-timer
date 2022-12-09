@@ -16,7 +16,7 @@ namespace Pomodoro
         {
             InitializeComponent();
             // update text boxes with file names
-            AssetDirectoryTextBox.Text = Path.GetFileName(Settings.Default.AssetDirectory);
+            AssetDirectoryTextBox.Text = Settings.Default.AssetDirectory;
             PomodoroSoundTextBox.Text = Path.GetFileName(Settings.Default.PomodoroSoundFile);
             BreakSoundTextBox.Text = Path.GetFileName(Settings.Default.BreakSoundFile);
             VolumeTextBox.Text = Settings.Default.Volume.ToString();
