@@ -15,14 +15,12 @@ namespace Pomodoro
     public partial class MainWindow : Window
     {
         // constants
-        private const int MINUTE = 60; // seconds in one minute
-        private const int HOUR = 60 * MINUTE; // seconds in one hour
         private const string POMODORO_STATUS = "Pomodoro";
         private const string LONG_BREAK_STATUS = "Long break";
         private const string SHORT_BREAK_STATUS = "Short break";
-        private const string DEFAULT_ASSET_DIRECTORY = "../../../assets";
-        private const string DEFAULT_POMODORO_SOUND_FILE = "pomodoro-sound";
-        private const string DEFAULT_BREAK_SOUND_FILE = "break-sound";
+        private const string DEFAULT_ASSET_DIRECTORY = "";
+        private const string DEFAULT_POMODORO_SOUND_FILE = "";
+        private const string DEFAULT_BREAK_SOUND_FILE = "";
         private readonly string[] SOUND_FILE_EXTENSIONS = { ".wav", ".mp3" };
         private int completedPomodoros;
         private Stack<string> playlist;
@@ -58,12 +56,6 @@ namespace Pomodoro
             sleepTimer = new DispatcherTimer();
             sleepTimer.Tick += RestartSleepTimer;
             sleepTimer.Start();
-
-            // check if files are chosen
-            if (!Settings.Default.RandomSound && (!File.Exists(Settings.Default.PomodoroSoundFile) || !File.Exists(Settings.Default.BreakSoundFile)))
-            {
-                SetDefaultSettings();
-            }
         }
 
         public MediaPlayer mediaPlayer { get; set; }
@@ -72,26 +64,19 @@ namespace Pomodoro
         {
             // set settings to default values
             Settings.Default.RandomSound = false;
-
-            // find files by default name
-            Settings.Default.AssetDirectory = Path.GetFullPath(DEFAULT_ASSET_DIRECTORY);
-            var currentDirectory = new DirectoryInfo(Settings.Default.AssetDirectory);
-            var files = currentDirectory.GetFiles($"{DEFAULT_POMODORO_SOUND_FILE}.*");
-            if (files.Length > 0)
-            {
-                Settings.Default.PomodoroSoundFile = files[0].FullName;
-            }
-
-            files = currentDirectory.GetFiles($"{DEFAULT_BREAK_SOUND_FILE}.*");
-            if (files.Length > 0)
-            {
-                Settings.Default.BreakSoundFile = files[0].FullName;
-            }
+            Settings.Default.AssetDirectory = DEFAULT_ASSET_DIRECTORY;
+            Settings.Default.PomodoroSoundFile = DEFAULT_POMODORO_SOUND_FILE;
+            Settings.Default.BreakSoundFile = DEFAULT_BREAK_SOUND_FILE;
+            Settings.Default.SleepyTime = TimeSpan.Zero;
         }
 
         public void RestartSleepTimer(object sender, EventArgs e)
         {
             var sleepyTime = Settings.Default.SleepyTime;
+            if (sleepyTime.Equals(TimeSpan.Zero))
+            {
+                return;
+            }
             var now = DateTime.Now.TimeOfDay;
             if (now >= sleepyTime)
             {
@@ -107,13 +92,14 @@ namespace Pomodoro
 
         private void SleepyTimeMessage()
         {
-            var soundFileName = GetRandomSong();
-            if (!File.Exists(soundFileName))
+            string soundFileName;
+            try
             {
-                MessageBox.Show("Sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                soundFileName = GetRandomSong();
+            } catch (Exception)
+            {
                 return;
             }
-
             // start playing sound
             mediaPlayer.Open(new Uri(soundFileName));
             mediaPlayer.Volume = Settings.Default.Volume;
@@ -198,7 +184,13 @@ namespace Pomodoro
             var soundFileName = Settings.Default.PomodoroSoundFile;
             if (Settings.Default.RandomSound)
             {
-                soundFileName = GetRandomSong();
+                try
+                {
+                    soundFileName = GetRandomSong();
+                } catch (Exception)
+                {
+                    return;
+                }
             }
 
             if (!File.Exists(soundFileName))
@@ -231,7 +223,14 @@ namespace Pomodoro
             var soundFileName = Settings.Default.BreakSoundFile;
             if (Settings.Default.RandomSound)
             {
-                soundFileName = GetRandomSong();
+                try
+                {
+                    soundFileName = GetRandomSong();
+                }
+                catch (Exception)
+                {
+                    return;
+                }
             }
 
             if (!File.Exists(soundFileName))
@@ -303,10 +302,16 @@ namespace Pomodoro
 
         private Stack<string> CreateRandomPlaylist()
         {
-            var playlistFiles = Directory.EnumerateFiles(Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)
-                .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
-            Shuffle(playlistFiles);
-            return new Stack<string>(playlistFiles);
+            try
+            {
+                var playlistFiles = Directory.EnumerateFiles(Settings.Default.AssetDirectory, "*", SearchOption.AllDirectories)
+            .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
+                Shuffle(playlistFiles);
+                return new Stack<string>(playlistFiles);
+            } catch (Exception ex) when (!(ex is DirectoryNotFoundException) && !(ex is ArgumentException)) {
+                MessageBox.Show($"{ex.GetType()} error while creating sound playlist: {ex.Message}");
+                throw;
+            }
         }
 
         private void Shuffle<T>(List<T> list)
