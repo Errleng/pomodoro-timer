@@ -21,6 +21,7 @@ namespace Pomodoro
         private const string DEFAULT_ASSET_DIRECTORY = "";
         private const string DEFAULT_POMODORO_SOUND_FILE = "";
         private const string DEFAULT_BREAK_SOUND_FILE = "";
+        private readonly Window PARENT_WINDOW;
         private readonly string[] SOUND_FILE_EXTENSIONS = { ".wav", ".mp3" };
         private int completedPomodoros;
         private Stack<string> playlist;
@@ -33,6 +34,7 @@ namespace Pomodoro
 
         public MainWindow()
         {
+            PARENT_WINDOW = this;
             InitializeComponent();
 
             // initialize instance variables
@@ -109,7 +111,7 @@ namespace Pomodoro
             // show message
             var title = "GO TO SLEEP!";
             var text = "It's time to sleep!";
-            MessageBox.Show(text, title, MessageBoxButton.OK);
+            MessageBox.Show(PARENT_WINDOW, text, title, MessageBoxButton.OK);
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
@@ -195,7 +197,7 @@ namespace Pomodoro
 
             if (!File.Exists(soundFileName))
             {
-                MessageBox.Show("Pomodoro completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(PARENT_WINDOW, "Pomodoro completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -208,7 +210,7 @@ namespace Pomodoro
             // show message
             var title = "Pomodoro Complete";
             var text = "Pomodoro complete!\nContinue to next state?";
-            if (MessageBox.Show(text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show(PARENT_WINDOW, text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ToggleTimer();
             }
@@ -235,7 +237,7 @@ namespace Pomodoro
 
             if (!File.Exists(soundFileName))
             {
-                MessageBox.Show("Break completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(PARENT_WINDOW, "Break completion sound file not found", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
@@ -247,7 +249,7 @@ namespace Pomodoro
             // show message
             var title = "Break Complete";
             var text = "Break complete!\nContinue to next state?";
-            if (MessageBox.Show(text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
+            if (MessageBox.Show(PARENT_WINDOW, text, title, MessageBoxButton.YesNo) == MessageBoxResult.Yes)
             {
                 ToggleTimer();
             }
