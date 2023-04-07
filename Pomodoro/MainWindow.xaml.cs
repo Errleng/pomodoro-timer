@@ -41,6 +41,7 @@ namespace Pomodoro
             mediaPlayer = new MediaPlayer();
             mediaPlayer.Volume = Settings.Default.Volume;
             mediaPlayer.MediaEnded += Media_Ended;
+            mediaPlayer.MediaFailed += Media_Failed;
 
             random = new Random();
             playlist = new Stack<string>();
@@ -290,6 +291,12 @@ namespace Pomodoro
         {
             mediaPlayer.Position = TimeSpan.Zero;
             mediaPlayer.Play();
+        }
+
+        private void Media_Failed(object sender, ExceptionEventArgs e)
+        {
+            var ex = e.ErrorException;
+            MessageBox.Show($"{ex.GetType()} error while playing sound file: {ex.Message}");
         }
 
         private string GetRandomSong()
