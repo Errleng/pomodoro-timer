@@ -25,7 +25,8 @@ namespace Pomodoro
             LongBreakDurationTextBox.Text = Settings.Default.LongBreakDuration.ToString();
             LongBreakPomodorosTextBox.Text = Settings.Default.LongBreakPomodoros.ToString();
             RandomSoundCheckbox.IsChecked = Settings.Default.RandomSound;
-            SleepyTimeTextBox.Text = Settings.Default.SleepyTime.ToString();
+            PreventClosingCheckbox.IsChecked = Settings.Default.PreventClosing;
+            SleepTimeTextBox.Text = Settings.Default.SleepTime.ToString();
         }
 
         private void AssetDirectoryButton_Click(object sender, RoutedEventArgs e)
@@ -159,17 +160,29 @@ namespace Pomodoro
             Settings.Default.Save();
         }
 
-        private void SleepyTimeButton_Click(object sender, RoutedEventArgs e)
+        private void SleepTimeButton_Click(object sender, RoutedEventArgs e)
         {
-            if (TimeSpan.TryParse(SleepyTimeTextBox.Text, out var time))
+            if (TimeSpan.TryParse(SleepTimeTextBox.Text, out var time))
             {
-                Settings.Default.SleepyTime = time;
+                Settings.Default.SleepTime = time;
                 Settings.Default.Save();
                 ((MainWindow)Application.Current.MainWindow).RestartSleepTimer(null, null);
                 return;
             }
 
             MessageBox.Show("Input must be a valid TimeSpan such as in the form HH:MM:SS", "Invalid Input", MessageBoxButton.OK, MessageBoxImage.Error);
+        }
+
+        private void PreventClosingCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.PreventClosing = true;
+            Settings.Default.Save();
+        }
+
+        private void PreventClosingCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            Settings.Default.PreventClosing = false;
+            Settings.Default.Save();
         }
 
         private void ResetButton_Click(object sender, RoutedEventArgs e)

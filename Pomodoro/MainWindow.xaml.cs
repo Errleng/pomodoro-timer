@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -61,6 +62,22 @@ namespace Pomodoro
             sleepTimer.Start();
         }
 
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (!Settings.Default.PreventClosing)
+            {
+                return;
+            }
+
+            var now = DateTime.Now.TimeOfDay;
+            var sleepTime = Settings.Default.SleepTime;
+            bool sleepTimeIgnoreClose = !sleepTime.Equals(TimeSpan.Zero) && now >= sleepTime;
+            if (sleepTimeIgnoreClose)
+            {
+                e.Cancel = true;
+            }
+        }
+
         public MediaPlayer mediaPlayer { get; set; }
 
         public static void SetDefaultSettings()
@@ -70,30 +87,29 @@ namespace Pomodoro
             Settings.Default.AssetDirectory = DEFAULT_ASSET_DIRECTORY;
             Settings.Default.PomodoroSoundFile = DEFAULT_POMODORO_SOUND_FILE;
             Settings.Default.BreakSoundFile = DEFAULT_BREAK_SOUND_FILE;
-            Settings.Default.SleepyTime = TimeSpan.Zero;
+            Settings.Default.SleepTime = TimeSpan.Zero;
         }
 
         public void RestartSleepTimer(object sender, EventArgs e)
         {
-            var sleepyTime = Settings.Default.SleepyTime;
-            if (sleepyTime.Equals(TimeSpan.Zero))
+            var sleepTime = Settings.Default.SleepTime;
+            if (sleepTime.Equals(TimeSpan.Zero))
             {
                 return;
             }
             var now = DateTime.Now.TimeOfDay;
-            if (now >= sleepyTime)
+            if (now >= sleepTime)
             {
-                // nag the user
-                SleepyTimeMessage();
+                SleepTimeMessage();
                 sleepTimer.Interval = new TimeSpan(0, 5, 0);
             }
             else
             {
-                sleepTimer.Interval = sleepyTime - now;
+                sleepTimer.Interval = sleepTime - now;
             }
         }
 
-        private void SleepyTimeMessage()
+        private void SleepTimeMessage()
         {
             string soundFileName;
             try

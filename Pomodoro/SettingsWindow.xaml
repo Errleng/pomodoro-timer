@@ -43,9 +43,12 @@
                 VerticalAlignment="Top" Width="97" Click="VolumeButton_Click" />
         <TextBox x:Name="VolumeTextBox" HorizontalAlignment="Left" Margin="112,35,0,0" TextWrapping="Wrap"
                  VerticalAlignment="Top" Width="120" Height="20" />
-        <TextBox x:Name="SleepyTimeTextBox" HorizontalAlignment="Left" Margin="609,82,0,0" TextWrapping="Wrap"
+        <TextBox x:Name="SleepTimeTextBox" HorizontalAlignment="Left" Margin="609,82,0,0" TextWrapping="Wrap"
                  VerticalAlignment="Top" Width="120" Height="21" />
-        <Button x:Name="SleepyTimeButton" Content="Sleepy Time" HorizontalAlignment="Left" Margin="536,82,0,0"
-                VerticalAlignment="Top" Click="SleepyTimeButton_Click" />
+        <Button x:Name="SleepTimeButton" Content="Sleep Time" HorizontalAlignment="Left" Margin="536,82,0,0"
+                VerticalAlignment="Top" Click="SleepTimeButton_Click" />
+        <CheckBox x:Name="PreventClosingCheckbox" Content="Prevent closing during sleep time" HorizontalAlignment="Left"
+            Margin="536,62,0,0" VerticalAlignment="Top" Checked="PreventClosingCheckbox_Checked"
+            Unchecked="PreventClosingCheckbox_Unchecked" />
     </Grid>
 </Window>
