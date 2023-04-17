@@ -31,6 +31,8 @@ namespace Pomodoro
         private readonly DispatcherTimer pomodoroTimer;
         private readonly Random random;
         private TimeSpan remainingTime;
+        private readonly DispatcherTimer idleTimer;
+        private TimeSpan idleTime;
         private readonly DispatcherTimer sleepTimer;
 
         public MainWindow()
@@ -49,12 +51,18 @@ namespace Pomodoro
 
             // initialize time
             remainingTime = TimeSpan.FromMinutes(Settings.Default.PomodoroDuration);
+            idleTime = TimeSpan.Zero;
             StatusLabel.Content = POMODORO_STATUS;
 
             // initialize Pomodoro timer
             pomodoroTimer = new DispatcherTimer();
             pomodoroTimer.Tick += PomodoroTimerTick;
             pomodoroTimer.Interval = new TimeSpan(0, 0, 1);
+
+            idleTimer = new DispatcherTimer();
+            idleTimer.Tick += IdleTimerTick;
+            idleTimer.Interval = new TimeSpan(0, 0, 1);
+            idleTimer.Start();
 
             // initialize sleep timer
             sleepTimer = new DispatcherTimer();
@@ -166,10 +174,9 @@ namespace Pomodoro
                 {
                     // break complete
                     // start a Pomodoro
-                    StatusLabel.Content = POMODORO_STATUS;
                     remainingTime = TimeSpan.FromMinutes(Settings.Default.PomodoroDuration);
-
                     BreakCompletionMessage();
+                    StatusLabel.Content = POMODORO_STATUS;
                 }
 
                 TimerLabel.Content = $"{remainingTime}";
@@ -179,6 +186,21 @@ namespace Pomodoro
             {
                 TimerLabel.Content = $"{remainingTime}";
                 remainingTime = remainingTime.Subtract(TimeSpan.FromSeconds(1));
+            }
+        }
+
+        private void IdleTimerTick(object sender, EventArgs e)
+        {
+            var idleStatuses = new HashSet<string> { SHORT_BREAK_STATUS, LONG_BREAK_STATUS };
+            if (!pomodoroTimer.IsEnabled || idleStatuses.Contains(StatusLabel.Content))
+            {
+                IdleTimeLabel.Visibility = Visibility.Visible;
+                IdleTimeLabel.Content = $"{idleTime} not working";
+                idleTime = idleTime.Add(TimeSpan.FromSeconds(1));
+            } else
+            {
+                IdleTimeLabel.Visibility = Visibility.Hidden;
+                //idleTime = TimeSpan.Zero;
             }
         }
 
