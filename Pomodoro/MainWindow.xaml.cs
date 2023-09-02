@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pomodoro.Properties;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -6,7 +7,6 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
-using Pomodoro.Properties;
 
 namespace Pomodoro
 {
@@ -123,7 +123,8 @@ namespace Pomodoro
             try
             {
                 soundFileName = GetRandomSong();
-            } catch (Exception)
+            }
+            catch (Exception)
             {
                 return;
             }
@@ -168,6 +169,7 @@ namespace Pomodoro
                     }
 
                     // completion message and sound
+                    ToggleTimer();
                     PomodoroCompletionMessage();
                 }
                 else
@@ -175,12 +177,12 @@ namespace Pomodoro
                     // break complete
                     // start a Pomodoro
                     remainingTime = TimeSpan.FromMinutes(Settings.Default.PomodoroDuration);
+                    ToggleTimer();
                     BreakCompletionMessage();
                     StatusLabel.Content = POMODORO_STATUS;
                 }
 
                 TimerLabel.Content = $"{remainingTime}";
-                ToggleTimer();
             }
             else
             {
@@ -191,16 +193,11 @@ namespace Pomodoro
 
         private void IdleTimerTick(object sender, EventArgs e)
         {
-            var idleStatuses = new HashSet<string> { SHORT_BREAK_STATUS, LONG_BREAK_STATUS };
+            var idleStatuses = new HashSet<string> { };
             if (!pomodoroTimer.IsEnabled || idleStatuses.Contains(StatusLabel.Content))
             {
-                IdleTimeLabel.Visibility = Visibility.Visible;
                 IdleTimeLabel.Content = $"{idleTime} not working";
                 idleTime = idleTime.Add(TimeSpan.FromSeconds(1));
-            } else
-            {
-                IdleTimeLabel.Visibility = Visibility.Hidden;
-                //idleTime = TimeSpan.Zero;
             }
         }
 
@@ -228,7 +225,8 @@ namespace Pomodoro
                 try
                 {
                     soundFileName = GetRandomSong();
-                } catch (Exception)
+                }
+                catch (Exception)
                 {
                     return;
                 }
@@ -355,7 +353,9 @@ namespace Pomodoro
             .Where(x => SOUND_FILE_EXTENSIONS.Any(y => x.EndsWith(y, StringComparison.OrdinalIgnoreCase))).ToList();
                 Shuffle(playlistFiles);
                 return new Stack<string>(playlistFiles);
-            } catch (Exception ex) when (!(ex is DirectoryNotFoundException) && !(ex is ArgumentException)) {
+            }
+            catch (Exception ex) when (!(ex is DirectoryNotFoundException) && !(ex is ArgumentException))
+            {
                 MessageBox.Show($"{ex.GetType()} error while creating sound playlist: {ex.Message}");
                 throw;
             }
