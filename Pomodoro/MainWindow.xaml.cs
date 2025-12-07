@@ -7,6 +7,7 @@ using System.Linq;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Threading;
+using WindowsDesktop;
 
 namespace Pomodoro
 {
@@ -109,7 +110,7 @@ namespace Pomodoro
             if (now >= sleepTime)
             {
                 SleepTimeMessage();
-                sleepTimer.Interval = new TimeSpan(0, 5, 0);
+                sleepTimer.Interval = new TimeSpan(0, 1, 0);
             }
             else
             {
@@ -135,9 +136,8 @@ namespace Pomodoro
 
 
             // show message
-            var title = "GO TO SLEEP!";
-            var text = "It's time to sleep!";
-            MessageBox.Show(PARENT_WINDOW, text, title, MessageBoxButton.OK);
+            var sleepWindow = new SleepWindow();
+            sleepWindow.ShowDialog();
 
             // stop playing sound after message confirmed received
             mediaPlayer.Stop();
